@@ -207,7 +207,7 @@ int main() {
   // Have a reference velocity to target
   double ref_vel = 49.5; // mph
 
-  h.onMessage([&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
+  h.onMessage([&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy, &lane, &ref_vel](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                      uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
@@ -248,6 +248,7 @@ int main() {
 
           	json msgJson;
 
+			// Define the actual (x, y) points we will use for the planner
           	vector<double> next_x_vals;
           	vector<double> next_y_vals;
 
@@ -292,9 +293,9 @@ int main() {
 			}
 
 			// In Frenet add evenly 30m spaced points ahead of the starting reference
-			vector<double> next_wp0 = get_XY(car_s + 30, (2 + 4 * lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
-			vector<double> next_wp1 = get_XY(car_s + 60, (2 + 4 * lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
-			vector<double> next_wp2 = get_XY(car_s + 90, (2 + 4 * lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
+			vector<double> next_wp0 = getXY(car_s + 30, (2 + 4 * lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
+			vector<double> next_wp1 = getXY(car_s + 60, (2 + 4 * lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
+			vector<double> next_wp2 = getXY(car_s + 90, (2 + 4 * lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
 
 			ptsx.push_back(next_wp0[0]);
 			ptsx.push_back(next_wp1[0]);
@@ -319,9 +320,9 @@ int main() {
 			// Set (x, y) points to the spline
 			s.set_points(ptsx, ptsy);
 
-			// Define the actual (x, y) points we will use for the planner
-			vector<double> next_x_vals;
-			vector<double> next_y_vals;
+			// // Define the actual (x, y) points we will use for the planner
+			// vector<double> next_x_vals;
+			// vector<double> next_y_vals;
 
 			// Start with all of the previous path points from last time
 			for (int i = 0; i < previous_path_x.size(); i++) {
