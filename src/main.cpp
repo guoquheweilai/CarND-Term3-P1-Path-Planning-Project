@@ -272,7 +272,13 @@ int main() {
 						// in front of us, could also flag to try to change lanes.
 						//ref_vel = 29.5; // mph
 						too_close = true;
-
+						// Shift to left lane
+						if (lane > 0) {
+							lane = 0;
+						}
+						// TODO: Create a cost function
+						// TODO: Decide whether to shift left or right
+						// TODO: Shift to right lane
 					}
 				}
 			}
