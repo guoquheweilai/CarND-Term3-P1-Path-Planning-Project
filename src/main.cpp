@@ -257,7 +257,7 @@ int main() {
 			// Find ref_v to use
 			for (int i = 0; i < sensor_fusion.size(); i++) {
 				// Car is in my line
-				float d = sensor[i][6];
+				float d = sensor_fusion[i][6];
 				if ((d < (2+4*lane+2)) && (d > 2+4*lane-2)) {
 					double vx = sensor_fusion[i][3];
 					double vy = sensor_fusion[i][4];
@@ -265,7 +265,7 @@ int main() {
 					double check_car_s = sensor_fusion[i][5];
 
 					// If using previous points can project s value out
-					check_car_s+=((double)prev_size*0.02*check_speed)
+					check_car_s += ((double)prev_size*0.02*check_speed);
 					// Check s values greatee than mine and s gap
 					if ((check_car_s > car_s) && ((check_car_s - car_s) < 30)) {
 						// Do some logic here, lower reference velocity so we don't crash into the car
