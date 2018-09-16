@@ -208,7 +208,7 @@ int main() {
   double ref_vel = 0.0; // mph
 
   // Set target velocity
-  target_vel = 49.5;
+  double target_vel = 49.5;
 
   h.onMessage([&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy, &lane, &ref_vel, &target_vel](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                      uWS::OpCode opCode) {
