@@ -207,7 +207,10 @@ int main() {
   // Have a reference velocity to target
   double ref_vel = 0.0; // mph
 
-  h.onMessage([&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy, &lane, &ref_vel](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
+  // Set target velocity
+  target_vel = 49.5;
+
+  h.onMessage([&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy, &lane, &ref_vel, &target_vel](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                      uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
@@ -266,16 +269,21 @@ int main() {
 
 					// If using previous points can project s value out
 					check_car_s += ((double)prev_size*0.02*check_speed);
-					// Check s values greatee than mine and s gap
+					// Check s values greater than mine and s gap
 					if ((check_car_s > car_s) && ((check_car_s - car_s) < 30)) {
 						// Do some logic here, lower reference velocity so we don't crash into the car
 						// in front of us, could also flag to try to change lanes.
 						//ref_vel = 29.5; // mph
 						too_close = true;
+						target_vel = check_speed;
+
 						// Shift to left lane
+						/*
 						if (lane > 0) {
 							lane = 0;
 						}
+						*/
+
 						// TODO: Create a cost function
 						// TODO: Decide whether to shift left or right
 						// TODO: Shift to right lane
@@ -283,10 +291,11 @@ int main() {
 				}
 			}
 
+			// When it is too close, slow down and keep the speed as the front car
 			if (too_close) {
 				ref_vel -= 0.224;
 			}
-			else if (ref_vel < 49.5) {
+			else if (ref_vel < target_vel) {
 				ref_vel += 0.224;
 			}
 
