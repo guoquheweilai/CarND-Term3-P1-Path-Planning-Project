@@ -293,9 +293,11 @@ int main() {
 
 			// When it is too close, slow down and keep the speed as the front car
 			if (too_close) {
-				ref_vel -= 0.224;
+				if (ref_vel >= target_vel) {
+					ref_vel -= 0.224;
+				}
 			}
-			else if (ref_vel < target_vel) {
+			else if (ref_vel < 49.5) {
 				ref_vel += 0.224;
 			}
 
