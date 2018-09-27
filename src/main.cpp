@@ -257,6 +257,59 @@ int main() {
 
 			bool too_close = false;
 
+			//# Add ADAS warning system
+			//# Front Collision Warning
+			//# Left Collision Warning
+			//# Right Collision Warning
+
+			//# Looping through the list of sensor fusion data
+			//# Check car speed and location
+
+			//# Car behind my car on left and right
+
+			//for (int i = 0; i < sensor_fusion.size(); i++) {
+			//	# Filter out the car not in our side
+			//		# Get car current location
+			//		# Predict car future location
+			//		# Create safe range, front and rear limit
+
+			//		# Decide behavior based on the above information
+			//		#     In out lane, car future location within front range, slow down to the same speed, start change lane counter
+			//		#     Once change lane counter start counting, start analyzing current sensor data and raise flag as necessary
+			//		#     Once the change lane counter reach to the threshold, shift lane based on the raised flag
+			//		#     Once lane change is completed successfully, stop and reset change lane counter to default value
+			//		#     Start accelerate and keep max speed until encounter another car in front of our ego car
+
+			//		# Read distance from sensor fusion data
+			//		float car_d = sensor_fusion[i][6];
+
+			//	# Set car_lane to default value
+			//		int check_car_lane = -1;
+
+			//	# Filter out the car not in our side
+			//		if (d > 0 && d < 4) {
+			//			check_car_lane = 0;
+			//		}
+			//		else if (d > 4 && d < 8) {
+			//			check_car_lane = 1;
+			//		}
+			//		else if (d > 8 && d < 12) {
+			//			check_car_lane = 2;
+			//		}
+
+			//		if (-1 == check_car_lane) {
+			//			continue;
+			//		}
+
+			//		# Get car current location
+			//			# Predict car future location
+
+			//			double check_car_s = sensor_fusion[i][5];
+			//		double vx = sensor_fusion[i][3];
+			//		double vy = sensor_fusion[i][4];
+			//		double check_car_speed = sqrt(vx*vx + vy * vy);
+			//}
+
 			// Find ref_v to use
 			for (int i = 0; i < sensor_fusion.size(); i++) {
 				// Car is in my line
