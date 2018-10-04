@@ -337,7 +337,7 @@ int main() {
 			//    Start accelerate and keep max speed until encounter another car in front of our ego car
 
 			// Car is ahead of us
-			if (car_head) {
+			if (car_ahead) {
 				// If left lane is available, shift to left
 				if ((lane > 0) && (!car_left)) {
 					lane -= 1;
