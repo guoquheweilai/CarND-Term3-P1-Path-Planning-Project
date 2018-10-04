@@ -267,92 +267,141 @@ int main() {
 
 			//# Car behind my car on left and right
 
-			//for (int i = 0; i < sensor_fusion.size(); i++) {
-			//	# Filter out the car not in our side
-			//		# Get car current location
-			//		# Predict car future location
-			//		# Create safe range, front and rear limit
+			bool flag_car_in_range = false;
+			bool car_ahead = false;
+			bool car_left = false;
+			bool car_right = false;
 
-			//		# Decide behavior based on the above information
-			//		#     In out lane, car future location within front range, slow down to the same speed, start change lane counter
-			//		#     Once change lane counter start counting, start analyzing current sensor data and raise flag as necessary
-			//		#     Once the change lane counter reach to the threshold, shift lane based on the raised flag
-			//		#     Once lane change is completed successfully, stop and reset change lane counter to default value
-			//		#     Start accelerate and keep max speed until encounter another car in front of our ego car
-
-			//		# Read distance from sensor fusion data
-			//		float car_d = sensor_fusion[i][6];
-
-			//	# Set car_lane to default value
-			//		int check_car_lane = -1;
-
-			//	# Filter out the car not in our side
-			//		if (d > 0 && d < 4) {
-			//			check_car_lane = 0;
-			//		}
-			//		else if (d > 4 && d < 8) {
-			//			check_car_lane = 1;
-			//		}
-			//		else if (d > 8 && d < 12) {
-			//			check_car_lane = 2;
-			//		}
-
-			//		if (-1 == check_car_lane) {
-			//			continue;
-			//		}
-
-			//		# Get car current location
-			//			# Predict car future location
-
-			//			double check_car_s = sensor_fusion[i][5];
-			//		double vx = sensor_fusion[i][3];
-			//		double vy = sensor_fusion[i][4];
-			//		double check_car_speed = sqrt(vx*vx + vy * vy);
-			//}
-
-			// Find ref_v to use
 			for (int i = 0; i < sensor_fusion.size(); i++) {
-				// Car is in my line
-				float d = sensor_fusion[i][6];
-				if ((d < (2+4*lane+2)) && (d > 2+4*lane-2)) {
-					double vx = sensor_fusion[i][3];
-					double vy = sensor_fusion[i][4];
-					double check_speed = sqrt(vx*vx + vy*vy);
-					double check_car_s = sensor_fusion[i][5];
+				// Filter out the car not in our side
+				//	 Get car current location
+				//   Predict car future location
+				//   Create safe range, front and rear limit
 
-					// If using previous points can project s value out
-					check_car_s += ((double)prev_size*0.02*check_speed);
-					// Check s values greater than mine and s gap
-					if ((check_car_s > car_s) && ((check_car_s - car_s) < 30)) {
-						// Do some logic here, lower reference velocity so we don't crash into the car
-						// in front of us, could also flag to try to change lanes.
-						//ref_vel = 29.5; // mph
-						too_close = true;
-						target_vel = check_speed;
+			    // Read distance from sensor fusion data
+				float check_car_d = sensor_fusion[i][6];
 
-						// Shift to left lane
-						/*
-						if (lane > 0) {
-							lane = 0;
-						}
-						*/
+				// Set car_lane to default value
+				int check_car_lane = -1;
 
-						// TODO: Create a cost function
-						// TODO: Decide whether to shift left or right
-						// TODO: Shift to right lane
+				// Filter out the car not in our side
+				if (check_car_d > 0 && check_car_d < 4) {
+					check_car_lane = 0;
+				}
+				else if (check_car_d > 4 && check_car_d < 8) {
+					check_car_lane = 1;
+				}
+				else if (check_car_d > 8 && check_car_d < 12) {
+					check_car_lane = 2;
+				}
+
+				if (-1 == check_car_lane) {
+					continue;
+				}
+
+				// Get car current location
+				// Predict car future location
+
+				double check_car_s = sensor_fusion[i][5];
+				double vx = sensor_fusion[i][3];
+				double vy = sensor_fusion[i][4];
+				double check_car_speed = sqrt(vx*vx + vy * vy);
+
+				// Predict car future location
+				double check_car_s_predicted = check_car_s + (double)prev_size * 0.02 * check_car_speed;
+
+				// Create safe range, front and rear limit is 30
+				// If the car is in our safe range, flag raised and determine the car location
+				flag_car_in_range = (check_car_s > car_s - 30) && (check_car_s < car_s + 30)
+				if (flag_car_in_range) {
+					if (check_car_lane == lane) {
+						// Car is ahead of us
+						car_ahead = true;
+					}
+					else if (check_car_lane == lane - 1) {
+						// Car is on the left of us
+						car_left = true;
+					}
+					else if (check_car_lane == lane + 1) {
+						// Car is on the right of us
+						car_right = true;
 					}
 				}
 			}
 
-			// When it is too close, slow down and keep the speed as the front car
-			if (too_close) {
-				if (ref_vel >= target_vel) {
+			// Decide behavior based on the above information
+			//    In our lane, car future location within front range, slow down to the same speed, start change lane counter
+			//    Once change lane counter start counting, start analyzing current sensor data and raise flag as necessary
+			//    Once the change lane counter reach to the threshold, shift lane based on the raised flag
+			//    Once lane change is completed successfully, stop and reset change lane counter to default value
+			//    Start accelerate and keep max speed until encounter another car in front of our ego car
+
+			// Car is ahead of us
+			if (car_head) {
+				// If left lane is available, shift to left
+				if ((lane > 0) && (!car_left)) {
+					lane -= 1;
+				}
+				// If right lane is available, shift to right
+				else if ((lane < 2) && (!car_right)) {
+					lane += 1;
+				}
+				// If neither left or right lane is available, slow down
+				else {
 					ref_vel -= 0.224;
 				}
 			}
-			else if (ref_vel < 49.5) {
-				ref_vel += 0.224;
+			// Car is not ahead of us
+			// Speed up to maximum speed limit with maximum accleration
+			else {
+				if (ref_vel < 49.5) {
+				    ref_vel += 0.224;
+				}
 			}
+
+			//// Find ref_v to use
+			//for (int i = 0; i < sensor_fusion.size(); i++) {
+			//	// Car is in my line
+			//	float d = sensor_fusion[i][6];
+			//	if ((d < (2+4*lane+2)) && (d > 2+4*lane-2)) {
+			//		double vx = sensor_fusion[i][3];
+			//		double vy = sensor_fusion[i][4];
+			//		double check_speed = sqrt(vx*vx + vy*vy);
+			//		double check_car_s = sensor_fusion[i][5];
+
+			//		// If using previous points can project s value out
+			//		check_car_s += ((double)prev_size*0.02*check_speed);
+			//		// Check s values greater than mine and s gap
+			//		if ((check_car_s > car_s) && ((check_car_s - car_s) < 30)) {
+			//			// Do some logic here, lower reference velocity so we don't crash into the car
+			//			// in front of us, could also flag to try to change lanes.
+			//			//ref_vel = 29.5; // mph
+			//			too_close = true;
+			//			target_vel = check_speed;
+
+			//			// Shift to left lane
+			//			/*
+			//			if (lane > 0) {
+			//				lane = 0;
+			//			}
+			//			*/
+
+			//			// TODO: Create a cost function
+			//			// TODO: Decide whether to shift left or right
+			//			// TODO: Shift to right lane
+			//		}
+			//	}
+			//}
+
+			//// When it is too close, slow down and keep the speed as the front car
+			//if (too_close) {
+			//	if (ref_vel >= target_vel) {
+			//		ref_vel -= 0.224;
+			//	}
+			//}
+			//else if (ref_vel < 49.5) {
+			//	ref_vel += 0.224;
+			//}
 
 
 			// Define the actual (x, y) points we will use for the planner
