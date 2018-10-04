@@ -312,7 +312,7 @@ int main() {
 
 				// Create safe range, front and rear limit is 30
 				// If the car is in our safe range, flag raised and determine the car location
-				flag_car_in_range = (check_car_s > car_s - 30) && (check_car_s < car_s + 30)
+				flag_car_in_range = (check_car_s > car_s - 30) && (check_car_s < car_s + 30);
 				if (flag_car_in_range) {
 					if (check_car_lane == lane) {
 						// Car is ahead of us
