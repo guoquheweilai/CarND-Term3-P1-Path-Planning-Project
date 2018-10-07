@@ -79,4 +79,4 @@ Path generation is handled at [`main.cpp` Line407-516](./src/main.cpp#L407-L516)
 ## Videos
 Video recordings for success cases.  
 Success to run a full track.  
-![Success to run a full track](./videos/Success to run a full track.gif)  
+![Success to run a full track](./videos/Success_to_run_a_full_track.gif)  
