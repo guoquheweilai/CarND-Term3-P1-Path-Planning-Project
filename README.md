@@ -69,7 +69,13 @@ Yes, it does.
 Yes, it does.  
 ### 3. Reflection  
 #### 3.1 There is a reflection on how to generate paths.  
-[Placeholder]  
+Path generation is handled at [`main.cpp` Line407-516](./src/main.cpp#L407-L516).  
+1. We will use the last two points from previous trajectory as starting point at [`main.cpp` Line416-449](./src/main.cpp#L416-L449).  
+2. We will add another three points(30m, 60m, 90m) ahead of the current ego car location at [`main.cpp` Line451-462](./src/main.cpp#L451-L462).  
+3. We will convert those points from Frenet coordinates to local car coordinates at [`main.cpp` Line464-471](./src/main.cpp#L464-L471).  
+4. We will push last two points to the new path for smooth changing at [`main.cpp` Line483-487](./src/main.cpp#L483-L487).  
+5. We will calculate the spline points based on the given target x distance at [`main.cpp` Line489-492](./src/main.cpp#L489-L492).  
+6. We will generate 50 points and rotate those points back to normal then push them to the new path at [`main.cpp` Line496-516](./src/main.cpp#L496-L516).  
 ## Videos
 Video recordings for success cases.  
 Success to run a full track.  
