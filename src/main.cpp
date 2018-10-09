@@ -285,13 +285,13 @@ int main() {
 				int check_car_lane = -1;
 
 				// Filter out the car not in our side
-				if (check_car_d > 0 && check_car_d < 4) {
+				if (check_car_d >= 0 && check_car_d < 4) {
 					check_car_lane = 0;
 				}
-				else if (check_car_d > 4 && check_car_d < 8) {
+				else if (check_car_d >= 4 && check_car_d < 8) {
 					check_car_lane = 1;
 				}
-				else if (check_car_d > 8 && check_car_d < 12) {
+				else if (check_car_d >= 8 && check_car_d < 12) {
 					check_car_lane = 2;
 				}
 
@@ -312,11 +312,13 @@ int main() {
 
 				// Create safe range, front and rear limit is 30
 				// If the car is in our safe range, flag raised and determine the car location
-				flag_car_in_range = (check_car_s > car_s - 30) && (check_car_s < car_s + 30);
+				flag_car_in_range = (check_car_s_predicted > car_s - 30) && (check_car_s_predicted < car_s + 30);
 				if (flag_car_in_range) {
 					if (check_car_lane == lane) {
 						// Car is ahead of us
-						car_ahead = true;
+						if (check_car_s > car_s) {
+						    car_ahead = true;
+						}
 					}
 					else if (check_car_lane == lane - 1) {
 						// Car is on the left of us
