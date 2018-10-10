@@ -78,5 +78,9 @@ Path generation is handled at [`main.cpp` Line407-516](./src/main.cpp#L407-L516)
 6. We will generate 50 points and rotate those points back to normal then push them to the new path at [`main.cpp` Line496-516](./src/main.cpp#L496-L516).  
 ## Videos
 Video recordings for success cases.  
+Success to run without incident - part 1.  
+![Success_Run_Part1](./videos/Success_Run_Part1.gif)  
+Success to run without incident - part 2.  
+![Success_Run_Part2](./videos/Success_Run_Part2.gif)  
 Success to run a full track.  
 ![Success to run a full track](./videos/Success_to_run_a_full_track.gif)  
